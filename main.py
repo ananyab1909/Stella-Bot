@@ -51,39 +51,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     print(f'User({update.message.chat_id}) in {message_type} : "{text}"')
 
-    if "news_step" in context.user_data:
-        if context.user_data["news_step"] == "country":
-            country_name = text.strip()
-            country_code = pycountry.countries.get(name=country_name).alpha_2
-            categories = ["business", "entertainment", "general", "health", "science", "sports", "technology"]
-            await update.message.reply_text("Valar dohaeris. Hail, seven Kingdoms. Where shall I send my Master of Whispers to?")
-            await update.message.reply_text("\n".join(categories))
-            context.user_data["country_code"] = country_code
-            context.user_data["news_step"] = "category"
-        elif context.user_data["news_step"] == "category":
-            category = text.strip()
-            country_code = context.user_data["country_code"]
-            
-            url = f"https://newsapi.org/v2/top-headlines?country={country_code}&category={category}&lang=en&apiKey={NEWS_API_KEY}"
-            try:
-                response = requests.get(url).json()
-                articles = response['articles']
-                news_message = "My Master of Whispers report that \n"
-                for article in articles[:5]:
-                    news_message += f"{article['title']}\n{article['url']}\n\n"
-                await update.message.reply_text(news_message)
-            except requests.exceptions.RequestException as e:
-                await update.message.reply_text(f"Error: {e}")
-            finally:
-                del context.user_data["news_step"]
-
-    elif "search_step" in context.user_data:
-        if context.user_data["search_step"] == "prompt":
-            prompt = text.strip()
-            response = model.generate_content(["You will generate answers within 75 tokens. Write in a continuous flow, avoiding bulleted lists." + prompt])
-            await update.message.reply_text(response.text)
-
-    elif "weather_step" in context.user_data:
+    if "weather_step" in context.user_data:
         if context.user_data["weather_step"] == "city":
             city_name = update.message.text.strip()
             url = BASE_URL + "appid=" + API_KEY + "&q=" + city_name
@@ -103,20 +71,52 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 await update.message.reply_text(f"Error: {e}")
             finally:
                 del context.user_data["weather_step"]
+        return
 
-    else:
-        if message_type == "group":
-            if BOT_USERNAME in text:
-                new_text = text.replace(BOT_USERNAME, '').strip()
-                response = handle_response(new_text)
-            else:
-                return
+    if "search_step" in context.user_data:
+        if context.user_data["search_step"] == "prompt":
+            prompt = text.strip()
+            response = model.generate_content(["You will generate answers within 75 tokens. Write in a continuous flow, avoiding bulleted lists." + prompt])
+            await update.message.reply_text(response.text)
+        return
+
+    if "news_step" in context.user_data:
+        if context.user_data["news_step"] == "country":
+            country_name = text.strip()
+            country_code = pycountry.countries.get(name=country_name).alpha_2
+            categories = ["business", "entertainment", "general", "health", "science", "sports", "technology"]
+            await update.message.reply_text("Valar dohaeris. Hail, seven Kingdoms. My raven is here. Command where to poke his nose.")
+            await update.message.reply_text("\n".join(categories))
+            context.user_data["country_code"] = country_code
+            context.user_data["news_step"] = "category"
+        elif context.user_data["news_step"] == "category":
+            category = text.strip()
+            country_code = context.user_data["country_code"]
+            
+            url = f"https://newsapi.org/v2/top-headlines?country={country_code}&category={category}&lang=en&apiKey={NEWS_API_KEY}"
+            try:
+                response = requests.get(url).json()
+                articles = response['articles']
+                news_message = "My Master of Whispers report that \n"
+                for article in articles[:5]:
+                    news_message += f"{article['title']}\n{article['url']}\n\n"
+                await update.message.reply_text(news_message)
+            except requests.exceptions.RequestException as e:
+                await update.message.reply_text(f"Error: {e}")
+            finally:
+                del context.user_data["news_step"]
+        return
+
+    if message_type == "group":
+        if BOT_USERNAME in text:
+            new_text = text.replace(BOT_USERNAME, '').strip()
+            response = handle_response(new_text)
         else:
-            response = handle_response(text)
-
+            return
+    else:
+        response = handle_response(text)
         print('Bot:', response)
         await update.message.reply_text(response)
-
 
 # Response handler
 def handle_response(text):
