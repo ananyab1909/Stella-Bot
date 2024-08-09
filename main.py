@@ -1,6 +1,6 @@
 from typing import Final
 from telegram import Update
-from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
+from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes, CallbackQueryHandler
 import openai
 import requests
 import pycountry
@@ -82,29 +82,25 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if "news_step" in context.user_data:
         if context.user_data["news_step"] == "country":
-            country_name = text.strip()
+            country_name = update.message.text.strip()
             country_code = pycountry.countries.get(name=country_name).alpha_2
             categories = ["business", "entertainment", "general", "health", "science", "sports", "technology"]
-            await update.message.reply_text("Valar dohaeris. Hail, seven Kingdoms. My raven is here. Command where to poke his nose.")
-            await update.message.reply_text("\n".join(categories))
+
+            keyboard = [
+                [{"text": "Business", "callback_data": "business"}],
+                [{"text": "Entertainment", "callback_data": "entertainment"}],
+                [{"text": "General", "callback_data": "general"}],
+                [{"text": "Health", "callback_data": "health"}],
+                [{"text": "Science", "callback_data": "science"}],
+                [{"text": "Sports", "callback_data": "sports"}],
+                [{"text": "Technology", "callback_data": "technology"}]
+            ]
+            reply_markup = {"inline_keyboard": keyboard}
+            
+            await update.message.reply_text("Valar dohaeris. Hail, seven Kingdoms. My raven is here. Command where to poke his nose.", reply_markup=reply_markup)
             context.user_data["country_code"] = country_code
             context.user_data["news_step"] = "category"
-        elif context.user_data["news_step"] == "category":
-            category = text.strip()
-            country_code = context.user_data["country_code"]
-            
-            url = f"https://newsapi.org/v2/top-headlines?country={country_code}&category={category}&lang=en&apiKey={NEWS_API_KEY}"
-            try:
-                response = requests.get(url).json()
-                articles = response['articles']
-                news_message = "My Master of Whispers report that \n"
-                for article in articles[:5]:
-                    news_message += f"{article['title']}\n{article['url']}\n\n"
-                await update.message.reply_text(news_message)
-            except requests.exceptions.RequestException as e:
-                await update.message.reply_text(f"Error: {e}")
-            finally:
-                del context.user_data["news_step"]
+
         return
 
     if message_type == "group":
@@ -117,6 +113,22 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         response = handle_response(text)
         print('Bot:', response)
         await update.message.reply_text(response)
+
+async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    category = query.data
+    country_code = context.user_data["country_code"]
+    
+    url = f"https://newsapi.org/v2/top-headlines?country={country_code}&category={category}&lang=en&apiKey={NEWS_API_KEY}"
+    try:
+        response = requests.get(url).json()
+        articles = response['articles']
+        news_message = "My Master of Whispers report that \n"
+        for article in articles[:5]:
+            news_message += f"{article['title']}\n{article['url']}\n\n"
+        await query.message.reply_text(news_message)
+    except requests.exceptions.RequestException as e:
+        await query.message.reply_text(f"Error: {e}")
 
 # Response handler
 def handle_response(text):
@@ -152,6 +164,7 @@ app.add_handler(CommandHandler('start', start_command))
 app.add_handler(CommandHandler('weather', weather_command))
 app.add_handler(CommandHandler('search', search_command))
 app.add_handler(CommandHandler('news', news_command))
+app.add_handler(CallbackQueryHandler(button_callback))
 
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
