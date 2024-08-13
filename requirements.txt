@@ -1,0 +1,8 @@
+python-telegram-bot==13.7
+requests==2.27.1
+pycountry==22.3.5
+google-api-python-client==2.34.0
+google-auth==2.6.0
+google-auth-oauthlib==0.5.1
+google-cloud-core==2.3.0
+google-cloud-genai==0.1.0
