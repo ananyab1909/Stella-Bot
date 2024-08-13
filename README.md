@@ -1,5 +1,5 @@
 # Flutter
-A multi purpose Telegram bot inspired from The Game of Thrones.  
+A multi purpose Telegram bot inspired from Game of Thrones.  
 
 ## Highlights
 1. A multi purpose bot, designed to steadfast daily tasks.
@@ -17,6 +17,11 @@ A multi purpose Telegram bot inspired from The Game of Thrones.
 5. Predicts __probable symptoms__ during your entire cycle
 6.  Hilarious __jokes__ straight from Chuck Norris
 
+## Get Started
+1. To interact personally with the bot, type _@ballerionBot_ on your search bar
+2. To add the bot to a group, add _@ballerionBot_ and give admin access to the bot
+3. Type _/start_ to get started or _/help_ for further info
+
 ## About Me
 Hello, my name is Ananya Biswas. I am an Engineering Student at [Kalinga Institute of Industrial Technology](https://kiit.ac.in/). I enjoy making projects in my leisure time and this is one of them. Now that my this project is over, I am open-sourcing the project. Hope you like it!
 
@@ -29,4 +34,6 @@ Lastly, I would like to put it out there that I have worked on other projects th
   - Twitter : https://x.com/not_average_x/
   - Instagram : https://instagram.com/thegraffiti.mind/
   - Github : https://github.com/ananyab1909/
+
+Feel free to suggest anything. 
 
