@@ -1,24 +1,25 @@
 from typing import Final
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes, CallbackQueryHandler
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 import requests
 import pycountry
-import random
 import google.generativeai as genai
 from datetime import datetime
+import os
+import config
 
-genai.configure(api_key='gemini-api-key')
+genai.configure(api_key=os.getenv('GENAI'))
 
 model = genai.GenerativeModel('gemini-pro')
 
-TOKEN: Final = "telegram-bot"
-BOT_USERNAME: Final = "bot-username"
+TOKEN: Final = os.getenv('TELEGRAM_TOKEN')
+BOT_USERNAME: Final = "@ballerionBot"
 
-API_KEY: Final = 'openweather-api-key'
+API_KEY: Final = os.getenv('WEATHER_API')
 BASE_URL: Final = "https://api.openweathermap.org/data/2.5/weather?"
 
-NEWS_API_KEY: Final = "news-api-api-key"
-
+NEWS_API_KEY: Final = os.getenv('NEWS_API')
 menstruation = {
   "menstrual_cycle": [
     {
@@ -296,6 +297,23 @@ async def joke_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     joke = data['value']
     await update.message.reply_text(joke)
 
+async def info_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    github_url = "https://github.com/ananyab1909/Flutter" 
+    portfolio_url = "https://dub.sh/ananyabiswas" 
+    bot_info = "This is a multi purpose bot developed in python.\n" \
+                "It has integrated api services and embedded women healthcare\n" \
+               "It's maintained by Ananya Biswas and is open-source.\n" \
+               "Feel free to contribute or report issues on GitHub!"
+
+    keyboard = [
+        [InlineKeyboardButton("GitHub Repository", url=github_url)],
+        [InlineKeyboardButton("Creator Portfolio", url=portfolio_url)],
+    ]
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    await update.message.reply_text(bot_info, reply_markup=reply_markup)
+
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Rytsas. Skorkydoso glaesā? Valar dohaeris 🌸.\n/start - greets with a welcome message\n/weather - quick weather forecast of any city\n/search - investigate any topic within a snap\n/news - latest news headlines of any country\n/joke - adds a twirl of Chuck Norris humour\n/health - tracks your menstrual cycle and ovulation, along with symptoms")
 
@@ -500,6 +518,7 @@ app.add_handler(CommandHandler('news', news_command))
 app.add_handler(CommandHandler('health', health_command))
 app.add_handler(CommandHandler('joke', joke_command))
 app.add_handler(CommandHandler('help', help_command))
+app.add_handler(CommandHandler('info', info_command))
 app.add_handler(CallbackQueryHandler(button_callback))
 
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
