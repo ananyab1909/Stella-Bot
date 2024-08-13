@@ -15,6 +15,7 @@ A multi purpose Telegram bot inspired from The Game of Thrones.
 3. Latest __news__ headlines from NewsAPI
 4. Embedded __period tracking__ and __ovulation tracking__ services
 5. Dad __jokes__ from Chuck Norris
+6. Predicts __probable symptoms__ during your entire cycle
 
 ## About Me
 Hello, my name is Ananya Biswas. I am an Engineering Student at [Kalinga Institute of Industrial Technology](https://kiit.ac.in/). I enjoy making projects in my leisure time and this is one of them. Now that my this project is over, I am open-sourcing the project. Hope you like it!
