@@ -1,4 +1,4 @@
-# Flutter
+# Stella Bot
 A multi purpose Telegram bot inspired from Game of Thrones.  
 
 ## Highlights
