@@ -298,7 +298,7 @@ async def joke_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(joke)
 
 async def info_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    github_url = "https://github.com/ananyab1909/Flutter" 
+    github_url = "https://github.com/ananyab1909/Stella-Bot" 
     portfolio_url = "https://dub.sh/ananyabiswas" 
     bot_info = "This is a multi purpose bot developed in python.\n" \
                 "It has integrated api services and embedded women healthcare\n" \
